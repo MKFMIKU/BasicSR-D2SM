@@ -90,12 +90,12 @@ class D2SMModel(BaseModel):
 
     def feed_data(self, data):
         self.lq = data['lq'].to(self.device)
-        if 'gt' in data:
-            self.gt = data['gt'].to(self.device)
+        self.gt = data['gt'].to(self.device)
+        self.sigma = data['sigma'].to(self.device)
 
     def optimize_parameters(self, current_iter):
         self.optimizer_g.zero_grad()
-        self.output = self.net_g(self.lq)
+        self.output = self.net_g(self.lq, self.sigma)
 
         l_total = 0
         loss_dict = OrderedDict()

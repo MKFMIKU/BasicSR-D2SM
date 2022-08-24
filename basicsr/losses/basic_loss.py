@@ -277,6 +277,9 @@ class D2SMLoss(nn.Module):
                  use_input_norm=True,
                  range_norm=False):
         super(D2SMLoss, self).__init__()
+        if len(layer_weights.keys()) > 1:
+            raise ValueError('D2SM only support single layer currently')
+
         self.layer_weights = layer_weights
         self.vgg = VGGFeatureExtractor(
             layer_name_list=list(layer_weights.keys()),
@@ -377,7 +380,7 @@ class D2SMLoss(nn.Module):
         x_features = self.vgg(x)
         gt_features = self.vgg(gt.detach())
 
-        # calculate perceptual loss
+        # calculate d2sm loss
         if self.perceptual_weight > 0:
             for k in x_features.keys():
                 self._dequeue_and_enqueue_data(x_features[k])
